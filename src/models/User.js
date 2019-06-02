@@ -25,5 +25,9 @@ module.exports = (sequelize, DataTypes) => {
     const res = await bcrypt.compare(password, this.password)
     return res
   }
+
+  User.associate = function (models) {
+  }
+  
   return User
 }
