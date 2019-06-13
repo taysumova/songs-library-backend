@@ -20,7 +20,7 @@ module.exports = {
       })
     } catch (err) {
       res.status(400).send({
-        error: 'This email account is already in use.'
+        error: 'Пользователь с таким e-mail уже существует'
       })
     }
   },
@@ -34,7 +34,7 @@ module.exports = {
       })
       if (!user) {
         return res.status(403).send({
-          error: 'The login information was incorrect'
+          error: 'Некорректный логин'
         })
       }
 
@@ -42,7 +42,7 @@ module.exports = {
 
       if (!isPasswordValid) {
         return res.status(403).send({
-          error: 'The password is incorrect'
+          error: 'Пароль введен неверно'
         })
       }
 

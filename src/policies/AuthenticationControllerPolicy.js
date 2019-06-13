@@ -15,22 +15,22 @@ module.exports = {
       switch (error.details[0].context.key) {
         case 'email':
           res.status(400).send({
-            error: 'You must provide a valid email address'
+            error: 'Некорректный email '
           })
           break
         case 'password':
           res.status(400).send({
-            error: `The password provided failed to match the following rules:
+            error: `Введенный пароль не соответствует требованиям:
                     <br>
-                    1. It must contain ONLY following characters: lower cases, upper cases...
+                    1. Пароль должен содержать ТОЛЬКО буквы в верхнем и нижнем регистре
                     <br>
-                    2. It must contain from 8 to 32 characters
+                    2. Пароль должен содержать от 8 до 32 символов
                     `
           })
           break
         default:
           res.status(400).send({
-            error: 'Invalid registration information'
+            error: 'Данные введены некорректно'
           })
       }
     } else {

@@ -1,17 +1,32 @@
-const { Bookmark } = require('../models')
+const { Bookmark, Song } = require('../models')
+const _ = require('lodash')
 
 module.exports = {
   async showBookmarks (req, res) {
     try {
-      const {songId, userId} = req.query
-      const bookmark = await Bookmark.findOne({
-        where: {
-          SongId: songId,
-          UserId: userId
-        }
+      const userId = req.user.id
+      const { songId } = req.query
+      const where = {
+        UserId: userId
+      }
+      if (songId) {
+        where.SongId = songId
+      }
+      const bookmarks = await Bookmark.findAll({
+        where: where,
+        include: [
+          {
+            model: Song
+          }
+        ]
       })
-    
-      res.send(bookmark)
+        .map(bookmark => bookmark.toJSON())
+        .map(bookmark => _.extend(
+          {},
+          bookmark.Song,
+          bookmark
+        ))
+      res.send(bookmarks)
     } catch (err) {
       res.status(500).send({
         error: 'An error has occured trying to fetch the bookmark'
@@ -20,7 +35,8 @@ module.exports = {
   },
   async addBookmark (req, res) {
     try {
-      const {songId, userId} = req.body
+      const userId = req.user.id
+      const { songId } = req.body
       const bookmark = await Bookmark.findOne({
         where: {
           SongId: songId,
@@ -46,12 +62,19 @@ module.exports = {
   },
   async deleteBookmark (req, res) {
     try {
-      const {bookmarkId} = req.params
+      const userId = req.user.id
+      const { bookmarkId } = req.params
       const bookmark = await Bookmark.findOne({
         where: {
-          id: bookmarkId
+          id: bookmarkId,
+          UserId: userId
         }
       })
+      if (!bookmark) {
+        return res.status(403).send({
+          error: 'you do not have access to this bookmark'
+        })
+      }
       await bookmark.destroy()
       res.send(bookmark)
     } catch (err) {
